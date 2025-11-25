@@ -24,6 +24,12 @@ Solis is an academic research project exploring type system implementation and c
 
 The compiler architecture emphasizes modularity: lexer, parser, type checker, and code generators are separate components sharing a common AST representation. The LLVM backend generates optimized native code with runtime support for thunks, closures, and garbage collection. The interpreter enables rapid iteration during development with the same type system and language semantics.
 
+## Roadmap
+
+The goal is to evolve Solis from an academic research project into a practical language capable of building real-world software.
+
+See [ROADMAP.md](ROADMAP.md) for detailed plans.
+
 ## Documentation
 
 Language documentation and examples are in the `doc/` directory. The `doc/examples/` folder contains runnable examples organized by concept: functions, pattern matching, lists, records, algebraic data types, lazy evaluation, do notation, type inference, BigInt, and higher-order functions.
