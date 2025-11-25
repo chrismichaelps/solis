@@ -6,6 +6,9 @@
 **Author:** Chris M. Perez  
 **Status:** Academic Research Prototype
 
+> > Disclaimer — Transparency About AI Usage
+> > The initial drafts of Solis—including documentation, prototypes, and parts of the compiler—were created with the help of AI tools following my prompts and design instructions. I do not claim to have written every line manually; instead, I guided the process, refined the output, and made the architectural and conceptual decisions. This repository represents an AI-assisted research prototype, not a fully hand-coded language implementation.
+
 Solis is a functional programming language inspired by Haskell, combining Hindley-Milner type inference with bidirectional type checking concepts from Lean. The language features pattern matching, call-by-need evaluation, and monadic do-notation. The implementation includes an interactive REPL and dual backends: an interpreter and an LLVM-based code generator.
 
 ## Why Solis?
