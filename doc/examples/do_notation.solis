@@ -1,0 +1,42 @@
+-- Do Notation
+-- Do notation provides a clean syntax for sequential computations
+
+-- Simple do block
+let simpleDo = do {
+  let x = 10
+  let y = 20
+  x + y
+}
+
+-- Multiple bindings in do block
+let compute = do {
+  let a = 5
+  let b = 10
+  let c = a * b
+  c + 15
+}
+
+-- Main entry point demonstrating do notation
+let main = do {
+  let x = 10;
+  let y = 20;
+  x + y
+}
+
+-- Nested do blocks
+let nested = do {
+  let x = do {
+    let a = 1
+    let b = 2
+    a + b
+  }
+  x * 2
+}
+
+-- Do blocks with expressions
+let withExpr = do {
+  let x = 10
+  let y = x * 2
+  y + 5
+}
+

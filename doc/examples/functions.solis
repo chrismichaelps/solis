@@ -1,0 +1,29 @@
+-- Functions and Lambda Expressions
+-- Solis supports both named functions and anonymous lambda expressions
+
+-- Named function definition
+let add x y = x + y
+
+-- Lambda expression
+let multiply = \x -> \y -> x * y
+
+-- Currying: functions are automatically curried
+let addThree = add 3
+let result = addThree 5  -- result is 8
+
+-- Higher-order functions
+let applyTwice f x = f (f x)
+let double x = x * 2
+let quadruple = applyTwice double
+
+-- Function composition
+let compose f g x = f (g x)
+let addOne x = x + 1
+let multiplyByTwo x = x * 2
+let addOneThenDouble = compose multiplyByTwo addOne
+
+-- Main entry point demonstrating functions
+let testAdd = add 10 20
+let testMultiply = multiply 3 4
+let testQuadruple = quadruple 5
+let main = addOneThenDouble 10

@@ -1,0 +1,31 @@
+-- BigInt
+-- Solis supports arbitrary-precision integers
+
+-- BigInt literals use 'n' suffix
+let bigNumber = 123456789012345678901234567890n
+
+-- BigInt arithmetic
+let factorial n = if n < 1n {
+  1n
+} else {
+  n * factorial (n - 1n)
+}
+
+-- BigInt with regular integers
+let toBigInt n = n  -- conversion happens automatically
+
+-- Large Fibonacci numbers
+let bigFibHelper i a b = if i == 0n {
+  a
+} else {
+  bigFibHelper (i - 1n) b (a + b)
+}
+
+let bigFib n = bigFibHelper n 0n 1n
+
+let fib100 = bigFib 100n
+
+-- Main entry point demonstrating BigInt
+let testFactorial = factorial 10n
+let testFib = bigFib 20n
+let main = testFib

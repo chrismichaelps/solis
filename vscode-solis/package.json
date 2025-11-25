@@ -1,0 +1,65 @@
+{
+  "name": "solis",
+  "displayName": "Solis Language Support",
+  "description": "Language support for Solis functional programming language",
+  "version": "0.1.0",
+  "publisher": "solis-lang",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "icon": "icon_only.png",
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "solis",
+        "aliases": [
+          "Solis",
+          "solis"
+        ],
+        "extensions": [
+          ".solis"
+        ],
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./icon_only.png",
+          "dark": "./icon_only.png"
+        }
+      }
+    ],
+    "grammars": [
+      {
+        "language": "solis",
+        "scopeName": "source.solis",
+        "path": "./syntaxes/solis.tmLanguage.json"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "Solis",
+      "properties": {
+        "solis.lsp.serverPath": {
+          "type": "string",
+          "default": "solis-lsp",
+          "description": "Path to solis-lsp executable"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/node": "^16.x",
+    "@types/vscode": "^1.75.0",
+    "typescript": "^4.9.0"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^8.1.0"
+  }
+}

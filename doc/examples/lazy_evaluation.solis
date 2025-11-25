@@ -1,0 +1,40 @@
+-- Lazy Evaluation
+-- Solis evaluates expressions lazily by default
+
+-- Infinite lists work naturally
+let naturalsHelper n = n:naturalsHelper (n + 1)
+let naturals = naturalsHelper 1
+
+-- Take first n elements (only evaluates what's needed)
+let take n xs = if n < 1 {
+  []
+} else {
+  match xs {
+    [] => [],
+    :: x xs => x:take (n - 1) xs
+  }
+}
+
+let firstTen = take 10 naturals
+
+-- Lazy let bindings
+let expensive = let x = 1000000 * 1000000 in x
+-- x is only computed when expensive is actually used
+
+-- Conditional evaluation
+let ifThenElse cond thenVal elseVal = if cond {
+  thenVal
+} else {
+  elseVal
+}
+-- Only the branch that's taken gets evaluated
+
+-- Lazy function arguments
+let lazyAdd x y = x + y
+-- Arguments are evaluated only when the function body needs them
+
+-- Main entry point demonstrating lazy evaluation
+let testFirstTen = firstTen
+let testLazyAdd = lazyAdd 5 10
+let testConditional = ifThenElse true 100 (1000000 * 1000000)
+let main = length testFirstTen

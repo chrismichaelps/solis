@@ -1,0 +1,40 @@
+-- Type Inference
+-- Solis infers types automatically - no annotations needed
+
+-- Simple inference
+let add x y = x + y
+-- Inferred: Int -> Int -> Int
+
+-- List operations
+let map f xs = match xs {
+  [] => [],
+  :: x xs => (f x):map f xs
+}
+-- Inferred: (a -> b) -> [a] -> [b]
+
+-- Higher-order functions
+let compose f g x = f (g x)
+-- Inferred: (b -> c) -> (a -> b) -> a -> c
+
+-- Polymorphic functions
+let id x = x
+-- Inferred: a -> a (works for any type)
+
+-- Type inference with records
+let getName p = p.name
+-- Inferred: { name: a } -> a
+
+-- Complex inference
+let foldl f z xs = match xs {
+  [] => z,
+  :: x xs => foldl f (f z x) xs
+}
+-- Inferred: (b -> a -> b) -> b -> [a] -> b
+
+-- Main entry point demonstrating type inference
+let testAdd = add 5 10
+let testMap = map (\x -> x * 2) [1, 2, 3]
+let testCompose = compose (\x -> x + 1) (\x -> x * 2) 5
+let testId = id 42
+let testGetName = getName { name = "Test" }
+let main = foldl (\acc -> \x -> acc + x) 0 [1, 2, 3, 4]

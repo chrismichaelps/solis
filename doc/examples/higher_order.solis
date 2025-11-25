@@ -1,0 +1,36 @@
+-- Higher-Order Functions
+-- Functions that operate on other functions
+
+-- Map: apply function to each element
+let numbers = [1, 2, 3, 4, 5]
+let doubled = map (\x -> x * 2) numbers
+
+-- Filter: keep elements matching predicate
+let evens = filter (\x -> x % 2 == 0) numbers
+
+-- Fold: reduce list to single value
+let sum xs = foldl (\acc -> \x -> acc + x) 0 xs
+let product xs = foldl (\acc -> \x -> acc * x) 1 xs
+
+-- Compose: chain functions together
+let addOne x = x + 1
+let multiplyByTwo x = x * 2
+let addOneThenDouble = compose multiplyByTwo addOne
+
+-- Partial application
+let add x y = x + y
+let addFive = add 5
+let result = addFive 10  -- 15
+
+-- Functions returning functions
+let makeAdder n = \x -> x + n
+let addTen = makeAdder 10
+
+-- Main entry point demonstrating higher-order functions
+let testDoubled = doubled
+let testEvens = evens
+let testProduct = product [1, 2, 3, 4]
+let testCompose = addOneThenDouble 10
+let testAddFive = addFive 20
+let testAddTen = addTen 5
+let main = sum [1, 2, 3, 4, 5]

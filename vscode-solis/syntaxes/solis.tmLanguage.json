@@ -1,0 +1,83 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Solis",
+  "patterns": [
+    {
+      "include": "#keywords"
+    },
+    {
+      "include": "#strings"
+    },
+    {
+      "include": "#comments"
+    },
+    {
+      "include": "#numbers"
+    },
+    {
+      "include": "#functions"
+    },
+    {
+      "include": "#operators"
+    }
+  ],
+  "repository": {
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.solis",
+          "match": "\\b(if|else|match|let|in|data|type|import|module|where)\\b"
+        },
+        {
+          "name": "constant.language.solis",
+          "match": "\\b(true|false)\\b"
+        }
+      ]
+    },
+    "strings": {
+      "name": "string.quoted.double.solis",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [
+        {
+          "name": "constant.character.escape.solis",
+          "match": "\\\\."
+        }
+      ]
+    },
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.double-dash.solis",
+          "match": "--.*$"
+        },
+        {
+          "name": "comment.block.solis",
+          "begin": "\\{-",
+          "end": "-\\}"
+        }
+      ]
+    },
+    "numbers": {
+      "name": "constant.numeric.solis",
+      "match": "\\b\\d+(\\.\\d+)?\\b"
+    },
+    "functions": {
+      "patterns": [
+        {
+          "name": "entity.name.function.solis",
+          "match": "\\b[a-z][a-zA-Z0-9_]*(?=\\s+[a-z])"
+        },
+        {
+          "name": "support.function.prelude.solis",
+          "match": "\\b(map|filter|fold|foldl|foldr|head|tail|take|drop|zip|print|length|reverse|concat|append|sum|product|max|min|all|any|elem|notElem)\\b"
+        }
+      ]
+    },
+    "operators": {
+      "name": "keyword.operator.solis",
+      "match": "(=>|->|\\||\\\\|::|\\+|-|\\*|/|==|!=|<|>|<=|>=|&&|\\|\\||!|=)"
+    }
+  },
+  "scopeName": "source.solis"
+}

@@ -1,0 +1,31 @@
+-- Records
+-- Records provide named fields for structured data
+
+-- Record creation
+let person = { name = "Alice", age = 30, city = "New York" }
+
+-- Record field access
+let getName p = p.name
+let getAge p = p.age
+
+-- Record update (creates new record)
+let olderPerson = { person | age = 31 }
+
+-- Nested records
+let address = { street = "123 Main St", zip = 10001 }
+let personWithAddress = { name = "Bob", age = 25, address = address }
+
+-- Accessing nested fields
+let getZip p = p.address.zip
+
+-- Records in pattern matching
+let greet p = match p {
+  { name = n, age = a } => "Hello, " ++ n ++ "! You are " ++ (show a) ++ " years old."
+}
+
+-- Main entry point demonstrating records
+let testName = getName person
+let testAge = getAge person
+let testZip = getZip personWithAddress
+let testGreet = greet person
+let main = getAge olderPerson

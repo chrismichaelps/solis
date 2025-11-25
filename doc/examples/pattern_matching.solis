@@ -1,0 +1,39 @@
+-- Pattern Matching
+-- Pattern matching is a core feature for destructuring data structures
+
+-- Pattern matching on lists
+let head xs = match xs {
+  [] => 0,
+  :: x _ => x
+}
+
+-- Pattern matching with multiple patterns
+let length xs = match xs {
+  [] => 0,
+  :: _ xs => 1 + length xs
+}
+
+-- Pattern matching on integers
+let factorial n = match n {
+  0 => 1,
+  1 => 1,
+  n => n * factorial (n - 1)
+}
+
+-- Nested pattern matching
+let sumPairs pairs = match pairs {
+  [] => 0,
+  :: [x, y] pairs => x + y + sumPairs pairs
+}
+
+-- Pattern matching with guards (using if)
+let max x y = match [x, y] {
+  :: a :: b _ => if a > b { a } else { b }
+}
+
+-- Main entry point demonstrating pattern matching
+let testHead = head [10, 20, 30]
+let testLength = length [1, 2, 3, 4, 5]
+let testFactorial = factorial 5
+let testSumPairs = sumPairs [[1, 2], [3, 4], [5, 6]]
+let main = max 15 8

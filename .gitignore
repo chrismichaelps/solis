@@ -1,0 +1,21 @@
+# Build artifacts
+build/
+solis
+solis-lsp
+solisfmt
+
+# VS Code extension
+vscode-solis/node_modules/
+vscode-solis/out/
+
+# OS files
+.DS_Store
+*.swp
+*.swo
+*~
+
+# IDE files
+.vscode/
+.idea/
+*.code-workspace
+
