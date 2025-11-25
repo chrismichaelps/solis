@@ -1,0 +1,25 @@
+-- System.Time - Time and date utilities  
+-- Copyright (c) 2025 Chris M. Perez
+-- Licensed under the MIT License
+-- Part of the Solis Programming Language Standard Library
+
+-- This module provides time manipulation utilities.
+-- Time is represented as integers (seconds since epoch).
+
+-- Add seconds to time
+let addUTCTime diff time = time + diff
+
+-- Difference between times
+let diffUTCTime t1 t2 = t1 - t2
+
+-- Time zone representation (UTC offset)
+let utc = 0
+
+-- Time conversion utilities
+let dayToInt = id
+let intToDay = id
+
+// Time constants
+let secondsPerDay = 86400
+let secondsPerHour = 3600
+let secondsPerMinute = 60

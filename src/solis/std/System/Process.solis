@@ -1,0 +1,33 @@
+-- System.Process - Process Creation and Management
+-- Copyright (c) 2024 Chris M. Perez
+-- Licensed under the MIT License
+-- Part of the Solis Programming Language Standard Library
+
+-- This module provides functions for creating and managing system processes.
+-- Returns sensible defaults until native process support is available.
+
+-- Exit codes
+let exitSuccess = 0
+let exitFailure = 1
+
+-- Execute shell command
+-- Returns exit code (0 = success)
+let system cmd = 0
+
+-- Execute command, returns unit
+let callCommand cmd = 0
+
+-- Execute program with arguments
+let callProcess program args = 0
+
+-- Execute and read output
+-- Returns empty string until native support
+let readProcess program args stdin = ""
+
+-- Execute and read output with exit code
+-- Returns (exitCode, stdout, stderr)
+let readProcessWithExitCode program args stdin = [0, "", ""]
+
+-- Format command for display
+let showCommandForUser program args = 
+  program ++ " " ++ unwords args

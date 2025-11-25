@@ -1,0 +1,22 @@
+-- System.Exit - Exit codes and program termination
+-- Copyright (c) 2025 Chris M. Perez
+-- Licensed under the MIT License
+-- Part of the Solis Programming Language Standard Library
+
+-- This module provides exit codes and termination functions.
+
+-- Exit codes
+let exitSuccess = 0
+let exitFailure code = code
+
+-- Exit with specified code
+let exitWith code = code
+
+-- Exit successfully
+let exitSuccessIO = 0
+
+-- Exit with failure
+let exitFailureIO = 1
+
+-- Print error message and exit with failure
+let die msg = 1

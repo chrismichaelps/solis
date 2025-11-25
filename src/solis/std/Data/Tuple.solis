@@ -1,0 +1,55 @@
+-- Data.Tuple - Tuple and pair operations
+-- Copyright (c) 2025 Chris M. Perez
+-- Licensed under the MIT License
+-- Part of the Solis Programming Language Standard Library
+
+-- This module provides utilities for working with tuples and pairs.
+
+-- Extract first element of pair
+let fst pair = head pair
+
+-- Extract second element of pair
+let snd pair = head (tail pair)
+
+-- Swap elements of pair
+let swap pair = [snd pair, fst pair]
+
+-- Convert function of two arguments to function taking a pair
+let curry f x y = f [x, y]
+
+-- Convert function taking a pair to function of two arguments
+let uncurry f pair = f (fst pair) (snd pair)
+
+-- Triple operations
+
+-- Extract first element of triple
+let fst3 triple = head triple
+
+-- Extract second element of triple
+let snd3 triple = head (tail triple)
+
+-- Extract third element of triple
+let thd3 triple = head (tail (tail triple))
+
+-- Zip three lists into triples
+let zip3 xs ys zs = match xs {
+  [] => [],
+  (x:xs) => match ys {
+    [] => [],
+    (y:ys) => match zs {
+      [] => [],
+      (z:zs) => [x, y, z] : zip3 xs ys zs
+    }
+  }
+}
+
+-- Unzip list of triples into three lists
+let unzip3 triples = match triples {
+  [] => [[], [], []],
+  (t:ts) =>
+    let rest = unzip3 ts in
+    let xs = head rest in
+    let ys = head (tail rest) in
+    let zs = head (tail (tail rest)) in
+    [fst3 t : xs, snd3 t : ys, thd3 t : zs]
+}

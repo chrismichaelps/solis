@@ -1,0 +1,18 @@
+-- Data.String - String manipulation utilities
+-- Copyright (c) 2025 Chris M. Perez
+-- Licensed under the MIT License
+-- Part of the Solis Programming Language Standard Library
+
+-- This module provides utilities for working with strings.
+-- Many string functions are built-in for performance.
+
+-- Check if string is empty
+let isEmpty s = s == ""
+
+-- Repeat string n times
+let replicateString n s = 
+  if n < 1 { 
+    "" 
+  } else { 
+    s ++ replicateString (n - 1) s 
+  }

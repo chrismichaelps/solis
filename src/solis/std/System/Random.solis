@@ -1,0 +1,85 @@
+-- System.Random - Random number generation
+-- Copyright (c) 2025 Chris M. Perez
+-- Licensed under the MIT License
+-- Part of the Solis Programming Language Standard Library
+
+-- This module provides pseudo-random number generation using a linear
+-- congruential generator. Perfect for games, shuffling, and simulations.
+
+-- Linear congruential generator constants
+let randA = 1103515245
+let randC = 12345
+let randM = 2147483648
+
+-- Create random number generator from seed
+let mkStdGen seed = seed
+
+-- Generate next random number and new seed
+let next seed =
+  let newSeed = (randA * seed + randC) % randM in
+  [newSeed % 100, newSeed]
+
+-- Generate random number (0-99) and new seed
+let random = next
+
+-- Generate random number in range [low, high]
+let randomR range seed =
+  let low = head range in
+  let high = head (tail range) in
+  let result = next seed in
+  let value = head result in
+  let newSeed = head (tail result) in
+  [low + (value % (high - low + 1)), newSeed]
+
+-- Generate list of random numbers (up to 100)
+let randoms seed =
+  let helper s n = if n > 100 {
+    []
+  } else {
+    let result = next s in
+    let value = head result in
+    let newSeed = head (tail result) in
+    value : helper newSeed (n + 1)
+  } in
+  helper seed 0
+
+-- Generate list of random numbers in range
+let randomRs range seed =
+  let low = head range in
+  let high = head (tail range) in
+  let helper s n = if n > 100 {
+    []
+  } else {
+    let result = randomR [low, high] s in
+    let value = head result in
+    let newSeed = head (tail result) in
+    value : helper newSeed (n + 1)
+  } in
+  helper seed 0
+
+-- Generate single random integer in range
+let randomInt low high seed = head (randomR [low, high] seed)
+
+-- Generate random boolean
+let randomBool seed = (head (next seed)) % 2 == 0
+
+-- Choose random element from list
+let randomElem xs seed =
+  let len = length xs in
+  let idx = head (randomR [0, len - 1] seed) in
+  at xs idx
+
+-- Shuffle list using Fisher-Yates algorithm
+let shuffle xs seed =
+  let len = length xs in
+  let helper remaining s acc = match remaining {
+    [] => acc,
+    _ =>
+      let idx = head (randomR [0, length remaining - 1] s) in
+      let elem = at remaining idx in
+      let newRemaining = take idx remaining ++ drop (idx + 1) remaining in
+      let result = next s in
+      let newSeed = head (tail result) in
+      helper newRemaining newSeed (elem : acc)
+  } in
+  helper xs seed []

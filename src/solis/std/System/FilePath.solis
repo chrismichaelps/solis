@@ -1,0 +1,182 @@
+-- System.FilePath - File path manipulation utilities
+-- Copyright (c) 2025 Chris M. Perez
+-- Licensed under the MIT License  
+-- Part of the Solis Programming Language Standard Library
+
+-- This module provides pure functions for manipulating file paths.
+-- All operations work on strings representing paths, no I/O required.
+
+-- Platform-specific path separator
+let pathSeparator = "/"
+let pathSeparators = ["/"]
+let searchPathSeparator = ":"
+let extSeparator = "."
+
+-- Check if character is a path separator
+let isPathSeparator c = c == "/" or c == "\\\\"
+
+-- Split path into name and extension
+let splitExtension path =
+  let parts = split "." path in
+  let len = length parts in
+  if len < 2 {
+    [path, ""]
+  } else {
+    let ext = last parts in
+    let name = intercalate "." (take (len - 1) parts) in
+    [name, "." ++ ext]
+  }
+
+-- Get file extension
+let takeExtension path = head (tail (splitExtension path))
+
+-- Replace file extension
+let replaceExtension path newExt = head (splitExtension path) ++ newExt
+
+-- Remove file extension
+let dropExtension path = head (splitExtension path)
+
+-- Add file extension
+let addExtension path ext = path ++ ext
+
+-- Check if path has extension
+let hasExtension path = takeExtension path != ""
+
+-- Alias for addExtension
+let addExt = addExtension
+
+-- Split all extensions (e.g. ".tar.gz")
+let splitExtensions path =
+  let parts = split "." path in
+  if length parts < 2 {
+    [path, ""]
+  } else {
+    let baseName = head parts in
+    let exts = "." ++ intercalate "." (tail parts) in
+    [baseName, exts]
+  }
+
+-- Get all extensions
+let takeExtensions path = head (tail (splitExtensions path))
+
+-- Remove all extensions
+let dropExtensions path = head (splitExtensions path)
+
+-- Split path into directory and filename
+let splitFileName path =
+  let parts = split "/" path in
+  let len = length parts in
+  if len == 1 {
+    ["", path]
+  } else {
+    let fileName = last parts in
+    let dir = intercalate "/" (take (len - 1) parts) in
+    [if dir == "" { "." } else { dir }, fileName]
+  }
+
+-- Get filename from path
+let takeFileName path = head (tail (splitFileName path))
+
+-- Replace filename in path
+let replaceFileName path newName = head (splitFileName path) ++ "/" ++ newName
+
+-- Remove filename, keep directory
+let dropFileName path = head (splitFileName path)
+
+-- Get filename without extension
+let takeBaseName path = dropExtension (takeFileName path)
+
+-- Replace base name (filename without extension)
+let replaceBaseName path newBase =
+  let dir = dropFileName path in
+  let ext = takeExtension path in
+  dir ++ "/" ++ newBase ++ ext
+
+-- Get directory from path
+let takeDirectory = dropFileName
+
+-- Replace directory in path
+let replaceDirectory path newDir = newDir ++ "/" ++ takeFileName path
+
+-- Combine two paths
+let combine dir file = if dir == "" { file } else { dir ++ "/" ++ file }
+
+-- Alias for combine
+let combinePath = combine
+
+-- Split path into components
+let splitPath path = split "/" path
+
+-- Join path components
+let joinPath = intercalate "/"
+
+-- Alias for splitPath
+let splitDirectories = splitPath
+
+-- Split drive (empty on Unix)
+let splitDrive path = ["", path]
+let takeDrive path = ""
+let hasDrive path = false
+let dropDrive path = path
+let isDrive path = false
+
+-- Check for trailing separator
+let hasTrailingPathSeparator path =
+  let lastChar = if length path > 0 { at path (length path - 1) } else { "" } in
+  isPathSeparator lastChar
+
+-- Add trailing separator if missing
+let addTrailingPathSeparator path =
+  if hasTrailingPathSeparator path {
+    path
+  } else {
+    path ++ "/"
+  }
+
+-- Remove trailing separator
+let dropTrailingPathSeparator path =
+  if hasTrailingPathSeparator path {
+    take (length path - 1) path
+  } else {
+    path
+  }
+
+-- Normalize path (remove redundant separators)
+let normalise path = joinPath (filter (\\x -> x != "") (splitPath path))
+
+-- Check if paths are equal
+let equalFilePath p1 p2 = normalise p1 == normalise p2
+
+-- Make second path relative to first
+let makeRelative base path =
+  let baseParts = splitPath (normalise base) in
+  let pathParts = splitPath (normalise path) in
+  let helper bp pp = match bp {
+    [] => joinPath pp,
+    (b:bs) => match pp {
+      [] => joinPath bp,
+      (p:ps) => if b == p {
+        helper bs ps
+      } else {
+        joinPath pp
+      }
+    }
+  } in
+  helper baseParts pathParts
+
+-- Check if path is relative
+let isRelative path = not (isAbsolute path)
+
+-- Check if path is absolute
+let isAbsolute path =
+  if length path > 0 {
+    at path 0 == "/"
+  } else {
+    false
+  }
+
+-- Check if path is valid
+let isValid path = path != ""
+
+-- Make path valid by removing invalid characters
+let makeValid path = filter (\\c -> c != "\0") path

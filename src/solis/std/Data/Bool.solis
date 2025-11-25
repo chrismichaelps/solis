@@ -1,0 +1,24 @@
+-- Data.Bool - Boolean logic utilities
+-- Copyright (c) 2025 Chris M. Perez
+-- Licensed under the MIT License
+-- Part of the Solis Programming Language Standard Library
+
+-- This module provides additional boolean operations beyond basic and/or.
+
+-- Exclusive or - true if inputs differ
+let xor a b = (a or b) and not (a and b)
+
+-- Logical implication - false only if first is true and second is false
+let implies a b = not a or b
+
+-- Negated and
+let nand a b = not (a and b)
+
+-- Negated or
+let nor a b = not (a or b)
+
+-- Conditional as function - if condition then true-value else false-value
+let bool falseVal trueVal condition = if condition { trueVal } else { falseVal }
+
+-- Always true (useful as default condition)
+let otherwise = true

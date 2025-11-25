@@ -1,0 +1,18 @@
+-- Control.Functor - Functor operations
+-- Copyright (c) 2025 Chris M. Perez
+-- Licensed under the MIT License
+-- Part of the Solis Programming Language Standard Library
+
+-- This module provides functor operations for lists.
+
+-- Map function over structure (same as map)
+let fmap = map
+
+-- Replace all values in structure with constant
+let replaceAll xs value = map (\\_ -> value) xs
+
+-- Discard value, replace with unit
+let void xs = map (\\_ -> 0) xs
+
+-- Constant mapping
+let mapConst value xs = replaceAll xs value

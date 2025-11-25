@@ -1,0 +1,1236 @@
+-- Solis Standard Library - Prelude
+-- Copyright (c) 2025 Chris M. Perez
+-- Licensed under the MIT License
+-- Part of the Solis Programming Language Standard Library
+
+-- Core standard library providing essential functions for functional programming
+-- Includes list operations, higher-order functions, arithmetic utilities, and combinators
+
+-- Identity function - returns argument unchanged
+let id x = x
+
+-- Constant function - returns first argument, ignoring second
+let const x _ = x
+
+-- Function composition - applies g then f
+let compose f g x = f g x
+
+-- Flips first two arguments of a function
+let flip f x y = f y x
+
+-- Boolean negation
+let not x = 
+  if x {
+  false
+} else {
+  true
+}
+
+-- Logical AND operation
+let and a b = 
+  if a {
+  b
+} else {
+  false
+}
+
+-- Logical OR operation
+let or a b = 
+  if a {
+  true
+} else {
+  b
+}
+
+-- Checks if list is empty
+let null xs = 
+  match xs {
+  [] => true,
+  _ => false
+}
+
+-- Returns first element of list, 0 if empty
+let head xs = 
+  match xs {
+  :: x _ => x,
+  [] => 0
+}
+
+-- Returns list without first element, empty list if empty
+let tail xs = 
+  match xs {
+  :: _ xs => xs,
+  [] => []
+}
+
+-- Returns last element of list, 0 if empty
+let last xs = 
+  match xs {
+  :: x [] => x,
+  :: _ xs => last xs,
+  [] => 0
+}
+
+-- Returns list without last element
+let init xs = 
+  match xs {
+  :: _ [] => [],
+  :: x xs => x:init xs,
+  [] => []
+}
+
+-- Computes length of list recursively
+let length = 
+  \xs -> match xs {
+  [] => 0,
+  :: _ t => 1+length t
+}
+
+-- Returns element at index n (0-indexed)
+let at = 
+  \n -> \xs -> if n<1 {
+  head xs
+} else {
+  at (n-1) (tail xs)
+}
+
+-- Applies function to each element of list
+let map = 
+  \f -> \xs -> match xs {
+  [] => [],
+  :: x xs => f x:map f xs
+}
+
+-- Filters list keeping elements matching predicate
+let filter = 
+  \p -> \xs -> match xs {
+  [] => [],
+  :: x xs => if p x {
+    x:filter p xs
+  } else {
+    filter p xs
+  }
+}
+
+-- Left fold - reduces list from left to right
+-- Applies binary function with accumulator
+let foldl = 
+  \f -> \z -> \xs -> match xs {
+  [] => z,
+  :: x xs => foldl f (f z x) xs
+}
+
+-- Right fold - reduces list from right to left
+-- Applies binary function with accumulator
+let foldr = 
+  \f -> \z -> \xs -> match xs {
+  [] => z,
+  :: x xs => f x (foldr f z xs)
+}
+
+-- Returns maximum of two values
+let max x y = 
+  if x>y {
+  x
+} else {
+  y
+}
+
+-- Returns minimum of two values
+let min x y = 
+  if x<y {
+  x
+} else {
+  y
+}
+
+-- Sums all elements in list
+let sum xs = foldl (\acc -> \x -> acc+x) 0 xs
+
+-- Multiplies all elements in list
+let product xs = foldl (\acc -> \x -> acc*x) 1 xs
+
+-- Tests if all elements satisfy predicate
+let all p xs = foldl (\acc -> \x -> and acc (p x)) true xs
+
+-- Tests if any element satisfies predicate
+let any p xs = foldl (\acc -> \x -> or acc (p x)) false xs
+
+-- Returns minimum element in list
+let minimum xs = foldl (\acc -> \x -> min acc x) (head xs) (tail xs)
+
+-- Returns maximum element in list
+let maximum xs = foldl (\acc -> \x -> max acc x) (head xs) (tail xs)
+
+-- Reverses list order
+let reverse xs = foldl (\acc -> \x -> x:acc) [] xs
+
+-- Concatenates two lists
+let append xs ys = 
+  match xs {
+  [] => ys,
+  :: x xs => x:append xs ys
+}
+
+-- Flattens list of lists into single list
+let concat = 
+  \xs -> match xs {
+  [] => [],
+  :: x xs => x++concat xs
+}
+
+-- Maps function over list and concatenates results
+let concatMap f xs = concat (map f xs)
+
+-- Inserts separator between list elements
+let intersperse = 
+  \sep -> \xs -> match xs {
+  [] => [],
+  :: x [] => [x],
+  :: x xs => x:sep:intersperse sep xs
+}
+
+-- Takes first n elements from list
+let take = 
+  \n -> \xs -> if n<1 {
+  []
+} else {
+  match xs {
+    [] => [],
+    :: x xs => x:take (n-1) xs
+  }
+}
+
+-- Drops first n elements from list
+let drop = 
+  \n -> \xs -> if n<1 {
+  xs
+} else {
+  match xs {
+    [] => [],
+    :: _ xs => drop (n-1) xs
+  }
+}
+
+-- Takes elements while predicate holds
+let takeWhile = 
+  \p -> \xs -> match xs {
+  [] => [],
+  :: x xs => if p x {
+    x:takeWhile p xs
+  } else {
+    []
+  }
+}
+
+-- Drops elements while predicate holds
+let dropWhile = 
+  \p -> \xs -> match xs {
+  [] => [],
+  :: x xs => if p x {
+    dropWhile p xs
+  } else {
+    x:xs
+  }
+}
+
+-- Splits list at position n - returns pair [prefix, suffix]
+let splitAt = \n -> \xs -> [take n xs, drop n xs]
+
+-- Splits list at first element failing predicate
+let span = \p -> \xs -> [takeWhile p xs, dropWhile p xs]
+
+-- Tests if element is in list
+let elem = 
+  \y -> \xs -> match xs {
+  [] => false,
+  :: x xs => if x==y {
+    true
+  } else {
+    elem y xs
+  }
+}
+
+-- Tests if element is not in list
+let notElem = \y -> \xs -> not (elem y xs)
+
+-- Finds first element satisfying predicate, returns 0 if none found
+let find = 
+  \p -> \xs -> match xs {
+  [] => 0,
+  :: x xs => if p x {
+    x
+  } else {
+    find p xs
+  }
+}
+
+-- Partitions list into elements satisfying and not satisfying predicate
+let partition = \p -> \xs -> [filter p xs, filter (\x -> not (p x)) xs]
+
+-- Combines two lists into list of pairs
+let zip = 
+  \xs -> \ys -> match xs {
+  [] => [],
+  :: x xs => match ys {
+    [] => [],
+    :: y ys => [x, y]:zip xs ys
+  }
+}
+
+-- Combines two lists using binary function
+let zipWith = 
+  \f -> \xs -> \ys -> match xs {
+  [] => [],
+  :: x xs => match ys {
+    [] => [],
+    :: y ys => (f x y):zipWith f xs ys
+  }
+}
+
+-- Tests if number is even
+let even n = n%2==0
+
+-- Tests if number is odd
+let odd n = n%2==1
+
+-- Returns absolute value
+let abs n = 
+  if n<0 {
+  0-n
+} else {
+  n
+}
+
+-- Negates number
+let negate n = 0-n
+
+-- Returns sign of number (-1, 0, or 1)
+let signum n = 
+  if n<0 {
+  0-1
+} else {
+  if n>0 {
+    1
+  } else {
+    0
+  }
+}
+
+-- Generates list of integers from 'from' to 'to' inclusive
+let range = 
+  \from -> \to -> if from>to {
+  []
+} else {
+  from:range (from+1) to
+}
+
+-- Replicates element n times
+let replicate = 
+  \n -> \x -> if n<1 {
+  []
+} else {
+  x:replicate (n-1) x
+}
+
+-- Applies function n times, collecting results
+let iterate = 
+  \f -> \x -> \n -> if n<1 {
+  []
+} else {
+  x:iterate f (f x) (n-1)
+}
+
+-- Repeatedly applies function until predicate holds
+let until = 
+  \p -> \f -> \x -> if p x {
+  x
+} else {
+  until p f (f x)
+}
+
+-- Applies function to value (reverse application)
+let apply x f = f x
+
+-- Inserts element into sorted list maintaining order
+let insert = 
+  \x -> \xs -> match xs {
+  [] => [x],
+  :: y ys => if x<y {
+    x:y:ys
+  } else {
+    y:insert x ys
+  }
+}
+
+-- Sorts list using insertion sort
+let sort xs = 
+  match xs {
+  [] => [],
+  :: x xs => insert x (sort xs)
+}
+
+-- Clamps value between lower and upper bounds
+let clamp lower upper x = max lower (min upper x)
+
+-- Tests if value is between bounds inclusive
+let between a b x = 
+  if x<a {
+  false
+} else {
+  if x>b {
+    false
+  } else {
+    true
+  }
+}
+
+-- Safe division returning 0 on division by zero
+let safeDiv a b = 
+  if b==0 {
+  0
+} else {
+  a/b
+}
+
+-- Counts occurrences of element in list
+let count = 
+  \y -> \xs -> sum (map (\x -> if x==y {
+  1
+} else {
+  0
+}) xs)
+
+-- Removes duplicate elements from list
+let unique xs = 
+  match xs {
+  [] => [],
+  :: x xs => x:unique (filter (\y -> not (x==y)) xs)
+}
+
+-- Groups consecutive elements using equality function
+let groupBy = 
+  \eq -> \xs -> match xs {
+  [] => [],
+  :: x xs => let ys = takeWhile (eq x) xs in
+  let zs = dropWhile (eq x) xs in
+  (x:ys):groupBy eq zs
+}
+
+-- Groups consecutive equal elements
+let group xs = 
+  match xs {
+  [] => [],
+  :: x xs => groupBy (\a -> \b -> a==b) (x:xs)
+}
+
+-- Computes average of list elements
+let average xs = safeDiv (sum xs) (length xs)
+
+-- Computes dot product of two vectors
+let dotProduct xs ys = sum (zipWith (\x -> \y -> x*y) xs ys)
+
+-- Left scan - like foldl but returns intermediate results
+let scanl = 
+  \f -> \z -> \xs -> match xs {
+  [] => [z],
+  :: x xs => z:scanl f (f z x) xs
+}
+
+-- Right scan - like foldr but returns intermediate results
+let scanr = 
+  \f -> \z -> \xs -> match xs {
+  [] => [z],
+  :: x xs => let qs = scanr f z xs in
+  (f x (head qs)):qs
+}
+
+-- Splits list of pairs into pair of lists
+let unzip pairs = 
+  match pairs {
+  [] => [[], []],
+  :: pair pairs => let rest = unzip pairs in
+  let firsts = head rest in
+  let seconds = head (tail rest) in
+  [(head pair):firsts, (head (tail pair)):seconds]
+}
+
+-- Breaks list at first element satisfying predicate
+let break = 
+  \p -> \xs -> match xs {
+  [] => [[], []],
+  :: x xs => if p x {
+    [[], x:xs]
+  } else {
+    let result = break p xs in
+    [(x:(head result)), (head (tail result))]
+  }
+}
+
+-- Looks up key in association list, returns 0 if not found
+let lookup = 
+  \key -> \xs -> match xs {
+  [] => 0,
+  :: pair xs => if (head pair)==key {
+    head (tail pair)
+  } else {
+    lookup key xs
+  }
+}
+
+-- Concatenates list of lists with separator
+let intercalate = 
+  \sep -> \xss -> match xss {
+  [] => [],
+  :: xs [] => xs,
+  :: xs xss => xs++sep++intercalate sep xss
+}
+
+-- Reciprocal of number, returns 0 for zero input
+let recip x = 
+  if x==0 {
+  0
+} else {
+  1/x
+}
+
+-- Greatest common divisor using Euclidean algorithm
+let gcd = 
+  \a -> \b -> if b==0 {
+  a
+} else {
+  gcd b (a%b)
+}
+
+-- Least common multiple
+let lcm = \a -> \b -> safeDiv (a*b) (gcd a b)
+
+-- Exponentiation (base raised to exp power)
+let pow = 
+  \base -> \exp -> if exp<1 {
+  1
+} else {
+  base*(pow base (exp-1))
+}
+
+-- Squares a number
+let square x = x*x
+
+-- Cubes a number
+let cube x = x*x*x
+
+-- Tests if number is a perfect square
+let isPerfectSquare n = (square (truncate (sqrt n)))==n
+
+-- Executes action when condition is true, returns 0 otherwise
+let when condition action = 
+  if condition {
+  action
+} else {
+  0
+}
+
+-- Executes action when condition is false, returns 0 otherwise
+let unless condition action = 
+  if condition {
+  0
+} else {
+  action
+}
+
+-- Conditional expression - returns ifTrue or ifFalse based on condition
+let choose condition ifTrue ifFalse = 
+  if condition {
+  ifTrue
+} else {
+  ifFalse
+}
+
+-- Compares two values returning -1, 0, or 1
+let compare x y = 
+  if x<y {
+  0-1
+} else {
+  if x>y {
+    1
+  } else {
+    0
+  }
+}
+
+-- Finds maximum element using custom comparison function
+let maximumBy = 
+  \cmp -> \xs -> match xs {
+  :: x [] => x,
+  :: x xs => let rest = maximumBy cmp xs in
+  if (cmp x rest)>0 {
+    x
+  } else {
+    rest
+  }
+}
+
+-- Finds minimum element using custom comparison function
+let minimumBy = 
+  \cmp -> \xs -> match xs {
+  :: x [] => x,
+  :: x xs => let rest = minimumBy cmp xs in
+  if (cmp x rest)<0 {
+    x
+  } else {
+    rest
+  }
+}
+
+-- Applies function n times to value
+let times = 
+  \n -> \f -> \x -> if n<1 {
+  x
+} else {
+  times (n-1) f (f x)
+}
+
+-- Generates list by repeatedly applying function to seed
+let unfold = 
+  \f -> \seed -> \n -> if n<1 {
+  []
+} else {
+  let next = f seed in
+  seed:unfold f next (n-1)
+}
+
+-- Tests if list contains exactly one element
+let isSingleton xs = 
+  match xs {
+  :: _ [] => true,
+  _ => false
+}
+
+-- Tests if all elements in list are equal
+let allEqual xs = 
+  match xs {
+  [] => true,
+  :: x xs => all (\y -> x==y) xs
+}
+
+-- Tests if list is sorted in ascending order
+let isSorted xs = 
+  match xs {
+  [] => true,
+  :: x [] => true,
+  :: x :: y xs => if x>y {
+    false
+  } else {
+    isSorted (y:xs)
+  }
+}
+
+-- Transposes matrix (list of lists)
+let transpose xss = 
+  match xss {
+  [] => [],
+  :: [] [] => [],
+  _ => let heads = map head xss in
+  let tails = map tail xss in
+  heads:transpose tails
+}
+
+-- Computes cartesian product of two lists
+let cartesian xs ys = concatMap (\x -> map (\y -> [x, y]) ys) xs
+
+-- Generates all rotations of list
+let rotations xs = 
+  let n = length xs in
+  map (\i -> (take n (drop i xs))++xs) (range 0 (n-1))
+
+-- Removes first occurrence of element from list
+let remove = 
+  \y -> \xs -> match xs {
+  [] => [],
+  :: x xs => if x==y {
+    xs
+  } else {
+    x:remove y xs
+  }
+}
+
+-- Set difference - elements in first list not in second
+let difference xs ys = filter (\x -> notElem x ys) xs
+
+-- Set union - elements in either list
+let union xs ys = xs++difference ys xs
+
+-- Set intersection - elements in both lists
+let intersect xs ys = filter (\x -> elem x ys) xs
+
+-- Alias for unique - removes duplicates
+let distinct xs = unique xs
+
+-- Extracts first element from 2-element list (pair)
+let fst pair = head pair
+
+-- Extracts second element from 2-element list (pair)
+let snd pair = head (tail pair)
+
+-- Converts uncurried function to curried form
+let curry f = \x -> \y -> f [x, y]
+
+-- Converts curried function to uncurried form
+let uncurry f = \pair -> f (fst pair) (snd pair)
+
+-- Successor - increments number by one
+let succ n = n+1
+
+-- Predecessor - decrements number by one
+let pred n = n-1
+
+-- Division and modulo as pair - returns [quotient, remainder]
+let divMod a b = [a/b, a%b]
+
+-- Quotient and remainder (alias for divMod)
+let quotRem a b = divMod a b
+
+-- Tests if first list is prefix of second
+let isPrefixOf xs ys = 
+  match xs {
+  [] => true,
+  :: x xs => match ys {
+    [] => false,
+    :: y ys => if x==y {
+      isPrefixOf xs ys
+    } else {
+      false
+    }
+  }
+}
+
+-- Tests if first list is suffix of second
+let isSuffixOf xs ys = isPrefixOf (reverse xs) (reverse ys)
+
+-- Tests if first list appears anywhere in second
+let isInfixOf xs ys = 
+  match ys {
+  [] => null xs,
+  :: _ ys => if isPrefixOf xs ys {
+    true
+  } else {
+    isInfixOf xs ys
+  }
+}
+
+-- Cycles list infinitely (returns list repeated n times)
+let cycle xs n = 
+  if n<1 {
+  []
+} else {
+  xs++cycle xs (n-1)
+}
+
+-- Drops elements from end while predicate holds
+let dropWhileEnd p xs = reverse (dropWhile p (reverse xs))
+
+-- Takes elements from end while predicate holds
+let takeWhileEnd p xs = reverse (takeWhile p (reverse xs))
+
+-- Left scan variant without initial value (uses first element)
+let scanl1 f xs = 
+  match xs {
+  [] => [],
+  :: x xs => scanl f x xs
+}
+
+-- Right scan variant without initial value (uses first element)
+let scanr1 f xs = 
+  match xs {
+  [] => [],
+  :: x [] => [x],
+  :: x xs => let qs = scanr1 f xs in
+  (f x (head qs)):qs
+}
+
+-- Returns all final segments of list (suffixes)
+let tails xs = 
+  match xs {
+  [] => [[]],
+  :: _ xs => xs:tails xs
+}
+
+-- Returns all initial segments of list (prefixes)
+let inits xs = 
+  match xs {
+  [] => [[]],
+  :: x xs => []:map (\ys -> x:ys) (inits xs)
+}
+
+-- Generates all subsequences of list (power set)
+let subsequences xs = 
+  match xs {
+  [] => [[]],
+  :: x xs => let subs = subsequences xs in
+  subs++map (\ys -> x:ys) subs
+}
+
+-- Generates all permutations of list
+let permutations xs = 
+  match xs {
+  [] => [[]],
+  :: x xs => concatMap (\ys -> let n = length ys in
+    map (\i -> (take i ys)++[x]++(drop i ys)) (range 0 n)) (permutations xs)
+}
+
+-- Combines three lists using ternary function
+let zipWith3 f xs ys zs = 
+  match xs {
+  [] => [],
+  :: x xs => match ys {
+    [] => [],
+    :: y ys => match zs {
+      [] => [],
+      :: z zs => (f x y z):zipWith3 f xs ys zs
+    }
+  }
+}
+
+-- Zips three lists into list of 3-element lists
+let zip3 xs ys zs = zipWith3 (\x -> \y -> \z -> [x, y, z]) xs ys zs
+
+-- Unzips list of 3-element lists into three separate lists
+let unzip3 triples = 
+  match triples {
+  [] => [[], [], []],
+  :: triple triples => let rest = unzip3 triples in
+  let firsts = head rest in
+  let seconds = head (tail rest) in
+  let thirds = head (tail (tail rest)) in
+  [(head triple):firsts, (head (tail triple)):seconds, (head (tail (tail triple))):thirds]
+}
+
+-- Repeats list elements n times each
+let concatReplicate n xs = concatMap (\x -> replicate n x) xs
+
+-- Strips prefix from list if present, returns original otherwise
+let stripPrefix prefix xs = 
+  if isPrefixOf prefix xs {
+  drop (length prefix) xs
+} else {
+  xs
+}
+
+-- Finds index of first element satisfying predicate, returns -1 if not found
+let findIndex p xs = 
+  let helper = \i -> \ys -> 
+    match ys {
+    [] => 0-1,
+    :: y ys => if p y {
+      i
+    } else {
+      helper (i+1) ys
+    }
+  }
+  in
+  helper 0 xs
+
+-- Finds indices of all elements satisfying predicate
+let findIndices p xs = 
+  let helper = \i -> \ys -> 
+    match ys {
+    [] => [],
+    :: y ys => if p y {
+      i:helper (i+1) ys
+    } else {
+      helper (i+1) ys
+    }
+  }
+  in
+  helper 0 xs
+
+-- Finds index of element in list, returns -1 if not found
+let elemIndex y xs = findIndex (\x -> x==y) xs
+
+-- Finds all indices of element in list
+let elemIndices y xs = findIndices (\x -> x==y) xs
+
+-- Safely indexes into list, returns default value if out of bounds
+let atDefault def n xs = 
+  if n<0 {
+  def
+} else {
+  match xs {
+    [] => def,
+    :: x xs => if n==0 {
+      x
+    } else {
+      atDefault def (n-1) xs
+    }
+  }
+}
+
+-- Tests if list has at least n elements
+let hasLength n xs = 
+  if n<1 {
+  true
+} else {
+  match xs {
+    [] => false,
+    :: _ xs => hasLength (n-1) xs
+  }
+}
+
+-- Safely takes exactly n elements, returns empty list if insufficient
+let takeExact n xs = 
+  if hasLength n xs {
+  take n xs
+} else {
+  []
+}
+
+-- Chunks list into sublists of length n
+let chunksOf n xs = 
+  if null xs {
+  []
+} else {
+  let chunk = take n xs in
+  let rest = drop n xs in
+  chunk:chunksOf n rest
+}
+
+-- Applies function until result satisfies predicate, collecting intermediate values
+let iterateUntil p f x = 
+  if p x {
+  [x]
+} else {
+  x:iterateUntil p f (f x)
+}
+
+-- Merges two sorted lists into single sorted list
+let merge xs ys = 
+  match xs {
+  [] => ys,
+  :: x xs => match ys {
+    [] => (x:xs),
+    :: y ys => if x<y {
+      x:merge xs (y:ys)
+    } else {
+      y:merge (x:xs) ys
+    }
+  }
+}
+
+-- Merge sort implementation
+let mergeSort xs = 
+  match xs {
+  [] => [],
+  :: x [] => [x],
+  :: _ _ => let mid = (length xs)/2 in
+  let left = take mid xs in
+  let right = drop mid xs in
+  merge (mergeSort left) (mergeSort right)
+}
+
+-- Sorts list with custom comparison function
+let sortBy cmp xs = 
+  match xs {
+  [] => [],
+  :: x xs => let insertBy = \y -> \ys -> 
+    match ys {
+    [] => [y],
+    :: z zs => if (cmp y z)<0 {
+      y:z:zs
+    } else {
+      z:(insertBy y zs)
+    }
+  }
+  in
+  insertBy x (sortBy cmp xs)
+}
+
+-- Sorts list by applying projection function
+let sortOn f xs = sortBy (\a -> \b -> compare (f a) (f b)) xs
+
+-- Left fold without initial value (uses first element)
+let foldl1 f xs = 
+  match xs {
+  [] => 0,
+  :: x xs => foldl f x xs
+}
+
+-- Right fold without initial value (uses first element)
+let foldr1 f xs = 
+  match xs {
+  [] => 0,
+  :: x [] => x,
+  :: x xs => f x (foldr1 f xs)
+}
+
+-- Repeats single value n times (alias for replicate)
+let repeat n x = replicate n x
+
+-- Deletes first element matching custom equality predicate
+let deleteBy eq x xs = 
+  match xs {
+  [] => [],
+  :: y ys => if eq x y {
+    ys
+  } else {
+    y:deleteBy eq x ys
+  }
+}
+
+-- Alias for remove - deletes first occurrence
+let delete x xs = remove x xs
+
+-- Removes duplicates using custom equality function
+let nubBy eq xs = 
+  match xs {
+  [] => [],
+  :: x xs => x:nubBy eq (filter (\y -> not (eq x y)) xs)
+}
+
+-- Alias for unique - standard Haskell name for removing duplicates
+let nub xs = unique xs
+
+-- Union of two lists using custom equality
+let unionBy eq xs ys = xs++nubBy eq (filter (\y -> not (any (eq y) xs)) ys)
+
+-- Intersection of two lists using custom equality
+let intersectBy eq xs ys = filter (\x -> any (eq x) ys) xs
+
+-- Inserts element into sorted list with custom comparison
+let insertBy cmp x xs = 
+  match xs {
+  [] => [x],
+  :: y ys => if (cmp x y)<0 {
+    x:y:ys
+  } else {
+    y:insertBy cmp x ys
+  }
+}
+
+-- Finds maximum element by applying projection function
+let maximumOn f xs = 
+  match xs {
+  :: x [] => x,
+  :: x xs => let rest = maximumOn f xs in
+  if (f x)>(f rest) {
+    x
+  } else {
+    rest
+  }
+}
+
+-- Finds minimum element by applying projection function
+let minimumOn f xs = 
+  match xs {
+  :: x [] => x,
+  :: x xs => let rest = minimumOn f xs in
+  if (f x)<(f rest) {
+    x
+  } else {
+    rest
+  }
+}
+
+-- Combines four lists using quaternary function
+let zipWith4 f ws xs ys zs = 
+  match ws {
+  [] => [],
+  :: w ws => match xs {
+    [] => [],
+    :: x xs => match ys {
+      [] => [],
+      :: y ys => match zs {
+        [] => [],
+        :: z zs => (f w x y z):zipWith4 f ws xs ys zs
+      }
+    }
+  }
+}
+
+-- Zips four lists into list of 4-element lists
+let zip4 ws xs ys zs = zipWith4 (\w -> \x -> \y -> \z -> [w, x, y, z]) ws xs ys zs
+
+-- Splits list into chunks at each occurrence of separator
+let splitOn sep xs = 
+  let helper = \acc -> \current -> \ys -> 
+    match ys {
+    [] => if null current {
+      reverse acc
+    } else {
+      reverse ((reverse current):acc)
+    },
+    :: y ys => if y==sep {
+      helper ((reverse current):acc) [] ys
+    } else {
+      helper acc (y:current) ys
+    }
+  }
+  in
+  helper [] [] xs
+
+-- Intercalates then concatenates (join with separator)
+let joinWith sep xs = intercalate sep xs
+
+-- Tests if list is subsequence of another
+let isSubsequenceOf xs ys = 
+  match xs {
+  [] => true,
+  :: x xs => match ys {
+    [] => false,
+    :: y ys => if x==y {
+      isSubsequenceOf xs ys
+    } else {
+      isSubsequenceOf (x:xs) ys
+    }
+  }
+}
+
+-- Sorts and removes duplicates
+let sortUnique xs = nub (sort xs)
+
+-- Zips two lists, truncating to length of shorter list (already have zip)
+-- Alias for compatibility
+let zipSafe xs ys = zip xs ys
+
+-- Returns list of pairs of consecutive elements
+let pairs xs = 
+  match xs {
+  [] => [],
+  :: x [] => [],
+  :: x :: y xs => [x, y]:pairs (y:xs)
+}
+
+-- Windows of size n from list
+let windows n xs = 
+  if (length xs)<n {
+  []
+} else {
+  (take n xs):windows n (tail xs)
+}
+
+-- Partitions list into chunks using predicate to mark boundaries
+let partitionBy p xs = 
+  match xs {
+  [] => [],
+  :: x xs => let ys = takeWhile (\y -> not (p y)) xs in
+  let zs = dropWhile (\y -> not (p y)) xs in
+  (x:ys):partitionBy p zs
+}
+
+-- Safe head returning default value if empty
+let headOr def xs = 
+  match xs {
+  [] => def,
+  :: x _ => x
+}
+
+-- Safe tail returning empty list if empty (already does this)
+-- Alias for clarity
+let tailSafe xs = tail xs
+
+-- Safe last returning default value if empty
+let lastOr def xs = 
+  match xs {
+  [] => def,
+  :: x [] => x,
+  :: _ xs => lastOr def xs
+}
+
+-- Safe minimum returning default if empty
+let minimumOr def xs = 
+  match xs {
+  [] => def,
+  :: x xs => foldl (\acc -> \y -> min acc y) x xs
+}
+
+-- Safe maximum returning default if empty
+let maximumOr def xs = 
+  match xs {
+  [] => def,
+  :: x xs => foldl (\acc -> \y -> max acc y) x xs
+}
+
+-- Factorial function
+let factorial n = 
+  if n<1 {
+  1
+} else {
+  n*(factorial (n-1))
+}
+
+-- Computes combinations (n choose k)
+let choose n k = 
+  if k>n {
+  0
+} else {
+  if k==0 {
+    1
+  } else {
+    (factorial n)/((factorial k)*(factorial (n-k)))
+  }
+}
+
+-- Maps function over list with index
+let mapIndexed f xs = 
+  let helper = \i -> \ys -> 
+    match ys {
+    [] => [],
+    :: y ys => (f i y):helper (i+1) ys
+  }
+  in
+  helper 0 xs
+
+-- Filters list with index
+let filterIndexed p xs = 
+  let helper = \i -> \ys -> 
+    match ys {
+    [] => [],
+    :: y ys => if p i y {
+      y:helper (i+1) ys
+    } else {
+      helper (i+1) ys
+    }
+  }
+  in
+  helper 0 xs
+
+-- Folds list with index
+let foldlIndexed f z xs = 
+  let helper = \i -> \acc -> \ys -> 
+    match ys {
+    [] => acc,
+    :: y ys => helper (i+1) (f i acc y) ys
+  }
+  in
+  helper 0 z xs
+
+-- Returns every nth element
+let everyNth n xs = 
+  let helper = \i -> \ys -> 
+    match ys {
+    [] => [],
+    :: y ys => if (i%n)==0 {
+      y:helper (i+1) ys
+    } else {
+      helper (i+1) ys
+    }
+  }
+  in
+  helper 0 xs
+
+-- Partitions list into two lists based on index predicate
+let partitionIndexed p xs = 
+  let helper = \i -> \ys -> 
+    match ys {
+    [] => [[], []],
+    :: y ys => let rest = helper (i+1) ys in
+    let trues = head rest in
+    let falses = head (tail rest) in
+    if p i y {
+      [y:trues, falses]
+    } else {
+      [trues, y:falses]
+    }
+  }
+  in
+  helper 0 xs
+

@@ -1,0 +1,142 @@
+-- Control.Monad - Monadic operations for lists
+-- Copyright (c) 2025 Chris M. Perez
+-- Licensed under the MIT License  
+-- Part of the Solis Programming Language Standard Library
+
+-- This module provides monadic operations, primarily for working with
+-- lists as a monad. These functions enable powerful composition and
+-- sequencing of computations.
+
+-- Inject value into monadic context
+let return x = [x]
+
+-- Monadic bind (flatMap)
+let bind m f = concatMap f m
+
+-- Sequence actions, discarding first result
+let then m1 m2 = bind m1 (\\_ -> m2)
+
+-- Map each element to action, collect results
+let mapM f xs = sequence (map f xs)
+
+-- mapM but discard results
+let mapM_ f xs = then (mapM f xs) (return 0)
+
+-- Flipped mapM
+let forM xs f = mapM f xs
+
+-- Flipped mapM_
+let forM_ xs f = mapM_ f xs
+
+-- Evaluate actions left to right, collect results
+let sequence xs = match xs {
+  [] => [[]],
+  (x:xs) =>
+    let rest = sequence xs in
+    concatMap (\\a -> map (\\as -> a : as) rest) x
+}
+
+-- sequence but discard results
+let sequence_ xs = then (sequence xs) (return 0)
+
+-- Flipped bind
+let bindFlipped f m = bind m f
+
+-- Execute action if condition is true
+let when condition action = if condition {
+  action
+} else {
+  return 0
+}
+
+-- Execute action if condition is false
+let unless condition action = if condition {
+  return 0
+} else {
+  action
+}
+
+-- Lift function to monad
+let liftM f m = bind m (\\x -> return (f x))
+
+-- Lift binary function to monad
+let liftM2 f m1 m2 =
+  bind m1 (\\x1 ->
+    bind m2 (\\x2 ->
+      return (f x1 x2)))
+
+-- Lift ternary function to monad
+let liftM3 f m1 m2 m3 =
+  bind m1 (\\x1 ->
+    bind m2 (\\x2 ->
+      bind m3 (\\x3 ->
+        return (f x1 x2 x3))))
+
+-- Lift 4-ary function to monad
+let liftM4 f m1 m2 m3 m4 =
+  bind m1 (\\x1 ->
+    bind m2 (\\x2 ->
+      bind m3 (\\x3 ->
+        bind m4 (\\x4 ->
+          return (f x1 x2 x3 x4)))))
+
+-- Lift 5-ary function to monad
+let liftM5 f m1 m2 m3 m4 m5 =
+  bind m1 (\\x1 ->
+    bind m2 (\\x2 ->
+      bind m3 (\\x3 ->
+        bind m4 (\\x4 ->
+          bind m5 (\\x5 ->
+            return (f x1 x2 x3 x4 x5))))))
+
+-- Apply function in monad to value in monad
+let ap mf mx = bind mf (\\f -> bind mx (\\x -> return (f x)))
+
+-- Flatten nested monad
+let join mm = bind mm id
+
+-- Filter with monadic predicate
+let filterM p xs = match xs {
+  [] => return [],
+  (x:xs) =>
+    let rest = filterM p xs in
+    bind (p x) (\\b ->
+      if b {
+        bind rest (\\ys -> return (x : ys))
+      } else {
+        rest
+      })
+}
+
+-- Replicate monadic action n times
+let replicateM n action = sequence (replicate n action)
+
+-- replicateM but discard results
+let replicateM_ n action = sequence_ (replicate n action)
+
+-- Monadic left fold
+let foldM f acc xs = match xs {
+  [] => return acc,
+  (x:xs) => bind (f acc x) (\\newAcc -> foldM f newAcc xs)
+}
+
+-- foldM but discard result
+let foldM_ f acc xs = then (foldM f acc xs) (return 0)
+
+-- Zip with monadic function
+let zipWithM f xs ys = sequence (zipWith f xs ys)
+
+-- zipWithM but discard results
+let zipWithM_ f xs ys = sequence_ (zipWith f xs ys)
+
+-- Discard computation result
+let void m = bind m (\\_ -> return 0)
+
+-- Left-to-right Kleisli composition
+let composeK f g x = bind (f x) g
+
+-- Right-to-left Kleisli composition  
+let composeKReverse g f x = bind (f x) g
+
+-- Sum of monadic values (first non-empty)
+let msum xs = foldr orMaybe Nothing xs

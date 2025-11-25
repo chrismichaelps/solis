@@ -1,8 +1,8 @@
 # Build artifacts
 build/
-solis
-solis-lsp
-solisfmt
+/solis
+/solis-lsp
+/solisfmt
 
 # VS Code extension
 vscode-solis/node_modules/

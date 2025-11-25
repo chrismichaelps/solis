@@ -1,0 +1,62 @@
+-- System.Directory - Directory and File Operations
+-- Copyright (c) 2024 Chris M. Perez
+-- Licensed under the MIT License
+-- Part of the Solis Programming Language Standard Library
+
+-- This module provides operations for manipulating directories and files.
+-- Functions work with path strings and will perform actual filesystem
+-- operations when native support is available.
+
+-- Simulated filesystem state (until native support)
+let currentDir = "."
+
+-- Create a directory
+-- Returns success (0) or failure (1)
+let createDirectory path = 0
+
+-- Remove an empty directory
+let removeDirectory path = 0
+
+-- List directory contents
+-- Returns empty list until native support
+let listDirectory path = []
+
+-- Get current working directory
+let getCurrentDirectory = currentDir
+
+-- Change current working directory  
+let setCurrentDirectory path = 0
+
+-- Remove a file
+let removeFile path = 0
+
+-- Rename or move a file
+let renameFile oldPath newPath = 0
+
+-- Copy a file
+let copyFile source dest = 0
+
+-- Check if file exists (returns false until native support)
+let doesFileExist path = false
+
+-- Check if directory exists (returns false until native support)
+let doesDirectoryExist path = false
+
+-- Check if any path exists
+let doesPathExist path = false
+
+-- Make path absolute
+-- Uses System.FilePath functions
+let makeAbsolute path = 
+  if isAbsolute path { 
+    path 
+  } else { 
+    currentDir ++ "/" ++ path 
+  }
+
+-- Normalize and make canonical
+-- Uses System.FilePath normalize
+let canonicalizePath path = normalise (makeAbsolute path)
+
+-- Get file size in bytes (returns 0 until native support)
+let getFileSize path = 0

@@ -1,0 +1,81 @@
+-- Data.Maybe - Optional value type and operations
+-- Copyright (c) 2025 Chris M. Perez
+-- Licensed under the MIT License
+-- Part of the Solis Programming Language Standard Library
+
+-- This module provides utilities for working with Maybe values,
+-- which represent computations that might fail or return nothing.
+
+-- Check if Maybe contains a value
+let isJust value = match value {
+  Just _ => true,
+  Nothing => false
+}
+
+-- Check if Maybe is Nothing
+let isNothing value = match value {
+  Just _ => false,
+  Nothing => true
+}
+
+-- Extract value from Maybe, using default if Nothing
+let fromMaybe default value = match value {
+  Just x => x,
+  Nothing => default
+}
+
+-- Extract value from Maybe (unsafe - use with caution)
+let fromJust value = match value {
+  Just x => x,
+  Nothing => 0
+}
+
+-- Convert list to Maybe (returns first element if any)
+let listToMaybe xs = match xs {
+  [] => Nothing,
+  (x:_) => Just x
+}
+
+-- Convert Maybe to list
+let maybeToList m = match m {
+  Nothing => [],
+  Just x => [x]
+}
+
+-- Fold over Maybe with function
+let maybe default f value = match value {
+  Just x => f x,
+  Nothing => default
+}
+
+-- Extract all Just values from list of Maybes
+let catMaybes xs = match xs {
+  [] => [],
+  (Just x:rest) => x : catMaybes rest,
+  (Nothing:rest) => catMaybes rest
+}
+
+-- Map function that returns Maybe, extract Just results
+let mapMaybe f xs = catMaybes (map f xs)
+
+-- Return first Just value, or second if first is Nothing
+let orMaybe m1 m2 = match m1 {
+  Just x => Just x,
+  Nothing => m2
+}
+
+-- Create Maybe based on condition
+let guard condition = if condition {
+  Just 0
+} else {
+  Nothing
+}
+
+-- Filter Maybe by predicate
+let mfilter p m = match m {
+  Nothing => Nothing,
+  Just x => if p x { Just x } else { Nothing }
+}
+
+-- Monadic mapMaybe for lists
+let mapMaybeM f xs = sequence (mapMaybe f xs)

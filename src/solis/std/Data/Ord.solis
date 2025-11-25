@@ -1,0 +1,27 @@
+-- Data.Ord - Ordering and comparison utilities
+-- Copyright (c) 2025 Chris M. Perez
+-- Licensed under the MIT License
+-- Part of the Solis Programming Language Standard Library
+
+-- This module provides comparison operations and sorting utilities.
+
+-- Create comparison function by comparing projections
+let comparing f x y = compare (f x) (f y)
+
+-- Clamp value between bounds
+let clamp low high x = max low (min high x)
+
+-- Sort with custom comparison function
+let sortBy cmp xs = match xs {
+  [] => [],
+  (x:xs) => insertBy cmp x (sortBy cmp xs)
+}
+
+-- Insert element using custom comparison
+let insertBy cmp x ys = match ys {
+  [] => [x],
+  (y:ys) => if (cmp x y) < 1 { x : y : ys } else { y : insertBy cmp x ys }
+}
+
+-- Sort by comparing projection
+let sortOn f = sortBy (comparing f)

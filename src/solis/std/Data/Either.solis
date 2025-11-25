@@ -1,0 +1,94 @@
+-- Data.Either - Sum type for error handling
+-- Copyright (c) 2025 Chris M. Perez
+-- Licensed under the MIT License
+-- Part of the Solis Programming Language Standard Library
+
+-- This module provides operations for Either values, which represent
+-- a choice between two types - typically used for error handling where
+-- Left represents an error and Right represents success.
+
+-- Check if value is Left
+let isLeft value = match value {
+  Left _ => true,
+  Right _ => false
+}
+
+-- Check if value is Right
+let isRight value = match value {
+  Left _ => false,
+  Right _ => true
+}
+
+-- Extract Left value, using default if Right
+let fromLeft default value = match value {
+  Left x => x,
+  Right _ => default
+}
+
+-- Extract Right value, using default if Left
+let fromRight default value = match value {
+  Left _ => default,
+  Right x => x
+}
+
+-- Fold over Either with two functions
+let either leftFn rightFn value = match value {
+  Left x => leftFn x,
+  Right x => rightFn x
+}
+
+-- Extract all Left values from list
+let lefts xs = match xs {
+  [] => [],
+  (Left x:rest) => x : lefts rest,
+  (Right _:rest) => lefts rest
+}
+
+-- Extract all Right values from list
+let rights xs = match xs {
+  [] => [],
+  (Left _:rest) => rights rest,
+  (Right x:rest) => x : rights rest
+}
+
+-- Separate Eithers into lefts and rights
+let partitionEithers xs = [lefts xs, rights xs]
+
+-- Apply function to Left value
+let mapLeft f e = match e {
+  Left x => Left (f x),
+  Right x => Right x
+}
+
+-- Apply function to Right value
+let mapRight f e = match e {
+  Left x => Left x,
+  Right x => Right (f x)
+}
+
+-- Apply functions to both sides
+let mapBoth leftFn rightFn e = match e {
+  Left x => Left (leftFn x),
+  Right x => Right (rightFn x)
+}
+
+-- Convert Either to Maybe (Right becomes Just, Left becomes Nothing)
+let eitherToMaybe e = match e {
+  Left _ => Nothing,
+  Right x => Just x
+}
+
+-- Convert Maybe to Either (Nothing becomes Left with default)
+let maybeToEither leftDefault m = match m {
+  Nothing => Left leftDefault, 
+  Just x => Right x
+}
+
+-- Tag Maybe as Either with error message for Nothing
+let note errorMsg m = match m {
+  Nothing => Left errorMsg,
+  Just x => Right x
+}
+
+-- Convert Either to Maybe, discarding Left
+let hush = eitherToMaybe

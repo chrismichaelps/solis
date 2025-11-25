@@ -1,0 +1,144 @@
+-- Solis Standard Library - BigInt Module
+-- Copyright (c) 2025 Chris M. Perez
+-- Licensed under the MIT License
+-- Part of the Solis Programming Language Standard Library
+
+-- Arbitrary precision integer arithmetic utilities
+-- Provides mathematical operations for BigInt type (suffix 'n')
+
+-- Convert standard integer to BigInt
+-- Takes Int and returns BigInt representation
+let toBigInt = \n -> n
+
+-- Convert BigInt to standard integer
+-- May overflow for values exceeding Int64 range
+let fromBigInt = \n -> n
+
+-- Exponentiation using efficient squaring algorithm
+-- Computes base^exp for arbitrary precision integers
+-- Complexity: O(log exp) multiplications
+let bigPow = \base -> \exp ->
+  if exp == 0 {
+    1n
+  } else {
+    if exp < 0 {
+      0n
+    } else {
+      let helper = \b -> \e -> \acc ->
+        if e == 0 {
+          acc
+        } else {
+          if e % 2 == 0 {
+            helper (b * b) (e / 2) acc
+          } else {
+            helper (b * b) (e / 2) (acc * b)
+          }
+        } in
+      helper base exp 1n
+    }
+  }
+
+-- Factorial computation with arbitrary precision
+-- Returns product of all positive integers up to n
+let bigFactorial = \n ->
+  if n < 0 {
+    0n
+  } else {
+    if n == 0 {
+      1n
+    } else {
+      n * bigFactorial (n - 1)
+    }
+  }
+
+-- Fibonacci sequence generator using iteration
+-- Avoids exponential recursion overhead
+-- Returns nth Fibonacci number in O(n) time
+let bigFib = \n ->
+  let helper = \i -> \a -> \b ->
+    if i == 0 {
+      a
+    } else {
+      helper (i - 1) b (a + b)
+    } in
+  helper n 0n 1n
+
+-- Greatest common divisor using Euclidean algorithm
+-- Computes GCD(a, b) in O(log min(a,b)) steps
+let bigGcd = \a -> \b ->
+  if b == 0n {
+    a
+  } else {
+    bigGcd b (a % b)
+  }
+
+-- Least common multiple derived from GCD
+-- Computes LCM(a, b) = (a * b) / GCD(a, b)
+let bigLcm = \a -> \b ->
+  (a * b) / (bigGcd a b)
+
+-- Primality test using trial division
+-- Tests divisibility up to sqrt(n)
+-- Returns true if n is prime, false otherwise
+let bigIsPrime = \n ->
+  if n < 2n {
+    false
+  } else {
+    if n == 2n {
+      true
+    } else {
+      if n % 2n == 0n {
+        false
+      } else {
+        let helper = \num -> \d ->
+          if d * d > num {
+            true
+          } else {
+            if num % d == 0n {
+              false
+            } else {
+              helper num (d + 2n)
+            }
+          } in
+        helper n 3n
+      }
+    }
+  }
+
+-- Absolute value for BigInt
+-- Returns non-negative magnitude
+let bigAbs = \n ->
+  if n < 0n {
+    0n - n
+  } else {
+    n
+  }
+
+-- Sign function for BigInt
+-- Returns -1n for negative, 0n for zero, 1n for positive
+let bigSignum = \n ->
+  if n < 0n {
+    0n - 1n
+  } else {
+    if n > 0n {
+      1n
+    } else {
+      0n
+    }
+  }
+
+-- Minimum of two BigInt values
+let bigMin = \a -> \b ->
+  if a < b {
+    a
+  } else {
+    b
+  }
+
+-- Maximum of two BigInt values
+let bigMax = \a -> \b ->
+  if a > b {
+    a
+  } else {
+    b
+  }

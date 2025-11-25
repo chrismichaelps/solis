@@ -1,0 +1,24 @@
+-- System.Info - Platform and runtime information
+-- Copyright (c) 2025 Chris M. Perez
+-- Licensed under the MIT License
+-- Part of the Solis Programming Language Standard Library
+
+-- This module provides information about the platform and runtime.
+
+-- Operating system name
+let os = "unix"
+
+-- Architecture
+let arch = "x86_64"
+
+-- Compiler name
+let compilerName = "solis"
+
+-- Compiler version
+let compilerVersion = "0.1.0"
+
+-- Platform checks
+let isWindows = false
+let isUnix = true
+let isMac = false
+let isLinux = true

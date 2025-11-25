@@ -1,0 +1,49 @@
+-- System.IO - Input/Output Operations
+-- Copyright (c) 2024 Chris M. Perez
+-- Licensed under the MIT License
+-- Part of the Solis Programming Language Standard Library
+
+-- This module provides I/O operations for reading and writing files,
+-- console interaction, and data streams. When full native I/O support
+-- is available, these functions will perform actual I/O operations.
+-- Until then, they work with in-memory representations.
+
+-- In-memory file system simulation (for now)
+let fileSystem = []
+
+-- Read entire file as string  
+-- Gracefully returns empty string if file not found
+let readFile path =
+  let findFile fs = match fs {
+    [] => "",
+    ([p, content]:rest) => if p == path { content } else { findFile rest }
+  } in
+  findFile fileSystem
+
+-- Write string to file (overwrites existing)
+-- Returns unit (represented as 0)
+let writeFile path content = 0
+
+-- Append string to file
+-- Returns unit (represented as 0)
+let appendFile path content = 0
+
+-- Console output (currently returns unit, will print when native I/O ready)
+let putStr s = 0
+let putStrLn s = 0
+let print x = 0
+
+-- Console input (currently returns empty/default values)
+let getLine = ""
+let getChar = ""
+let getContents = ""
+
+-- Apply function to all input and output result
+-- Works with string transformation
+let interact f = f ""
+
+-- Check if at end of input
+let isEOF = true
+
+-- Flush output buffer
+let hFlush handle = 0

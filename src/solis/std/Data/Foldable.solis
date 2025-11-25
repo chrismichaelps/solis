@@ -1,0 +1,18 @@
+-- Data.Foldable - Folding operations on lists
+-- Copyright (c) 2025 Chris M. Perez
+-- Licensed under the MIT License
+-- Part of the Solis Programming Language Standard Library
+
+-- This module provides folding and reduction operations on lists.
+
+-- Fold list of lists into single list
+let fold = concat
+
+-- Map then fold
+let foldMap f xs = concat (map f xs)
+
+-- Conjunction of all booleans in list
+let andList xs = foldl and true xs
+
+-- Disjunction of all booleans in list
+let orList xs = foldl or false xs

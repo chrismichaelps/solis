@@ -1,0 +1,39 @@
+-- Control.Applicative - Applicative functor operations
+-- Copyright (c) 2025 Chris M. Perez
+-- Licensed under the MIT License
+-- Part of the Solis Programming Language Standard Library
+
+-- This module provides applicative functor operations for lists.
+
+-- Inject value into applicative context
+let pure x = [x]
+
+-- Apply function in context to value in context
+let apply fs xs = concatMap (\\f -> map f xs) fs
+
+-- Sequence actions, discarding first result
+let thenDiscard m1 m2 = bind m1 (\\_ -> m2)
+
+-- Sequence actions, discarding second result
+let thenKeep m1 m2 = bind m1 (\\x -> bind m2 (\\_ -> return x))
+
+-- Lift function to applicative
+let liftA f m = apply (pure f) m
+
+-- Lift binary function to applicative
+let liftA2 f m1 m2 = apply (apply (pure f) m1) m2
+
+-- Lift ternary function to applicative
+let liftA3 f m1 m2 m3 = apply (apply (apply (pure f) m1) m2) m3
+
+-- Identity of alternative operator
+let empty = []
+
+-- Alternative operator (append for lists)
+let alt xs ys = xs ++ ys
+
+-- Make computation optional
+let optional m = alt (map Just m) (pure Nothing)
+
+-- Fold with alternative operator
+let asum xs = foldr alt empty xs

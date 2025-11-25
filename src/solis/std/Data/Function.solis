@@ -1,0 +1,15 @@
+-- Data.Function - Function composition and utilities
+-- Copyright (c) 2025 Chris M. Perez
+-- Licensed under the MIT License
+-- Part of the Solis Programming Language Standard Library
+
+-- This module provides utilities for working with functions.
+
+-- Apply value to function (pipe operator)
+let apply x f = f x
+
+-- Apply function to value (standard application)
+let applyFunc f x = f x
+
+-- Apply binary function "on" projection of arguments
+let on op f x y = op (f x) (f y)

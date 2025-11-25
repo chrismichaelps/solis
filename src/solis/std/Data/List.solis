@@ -1,0 +1,248 @@
+-- Data.List - List manipulation and utilities
+-- Copyright (c) 2025 Chris M. Perez
+-- Licensed under the MIT License
+-- Part of the Solis Programming Language Standard Library
+
+-- This module provides comprehensive operations for working with lists,
+-- including transformations, folds, scans, searching, and set operations.
+
+-- Basic list decomposition
+let uncons xs = match xs {
+  [] => Nothing,
+  (x:xs) => Just [x, xs]
+}
+
+-- List transformations
+
+-- Get all subsequences of a list
+let subsequences xs = match xs {
+  [] => [[]],
+  (x:xs) =>
+    let subseqs = subsequences xs in
+    subseqs ++ map (\s -> x : s) subseqs
+}
+
+-- All permutations (simplified - uses rotations)
+let permutations = rotations
+
+-- Folding operations
+
+-- Strict left fold (same as foldl for now)
+let foldl' = foldl
+
+-- Strict right fold (same as foldr for now)
+let foldr' = foldr
+
+-- Logical operations on boolean lists
+let andAll xs = foldl and true xs
+let orAll xs = foldl or false xs
+
+-- List building with accumulators
+
+-- Strict scan left
+let scanl' = scanl
+
+-- Map with accumulator from left
+let mapAccumL f acc xs = match xs {
+  [] => [acc, []],
+  (x:xs) =>
+    let result = f acc x in
+    let newAcc = head result in
+    let y = head (tail result) in
+    let restResult = mapAccumL f newAcc xs in
+    let finalAcc = head restResult in
+    let ys = head (tail restResult) in
+    [finalAcc, y : ys]
+}
+
+-- Map with accumulator from right
+let mapAccumR f acc xs = match xs {
+  [] => [acc, []],
+  (x:xs) =>
+    let restResult = mapAccumR f acc xs in
+    let accAfterRest = head restResult in
+    let ys = head (tail restResult) in
+    let result = f accAfterRest x in
+    let newAcc = head result in
+    let y = head (tail result) in
+    [newAcc, y : ys]
+}
+
+-- Build list by unfolding from a seed value
+let unfoldr f seed n = if n < 1 {
+  []
+} else {
+  let result = f seed in
+  match result {
+    Nothing => [],
+    Just pair =>
+      let value = head pair in
+      let nextSeed = head (tail pair) in
+      value : unfoldr f nextSeed (n - 1)
+  }
+}
+
+-- Sublist extraction and manipulation
+
+-- Drop elements from end while predicate holds
+let dropWhileEnd p xs = reverse (dropWhile p (reverse xs))
+
+-- Remove prefix if present, return Nothing if not found
+let stripPrefix prefix str =
+  let prefixLen = length prefix in
+  let strPrefix = take prefixLen str in
+  if strPrefix == prefix {
+    Just (drop prefixLen str)
+  } else {
+    Nothing
+  }
+
+-- All initial segments of a list
+let inits xs = match xs {
+  [] => [[]],
+  (x:xs) => [] : map (\\t -> x : t) (inits xs)
+}
+
+-- All tail segments of a list
+let tails xs = match xs {
+  [] => [[]],
+  (x:xs) => (x:xs) : tails xs
+}
+
+-- List predicates
+
+-- Check if first list is prefix of second
+let isPrefixOf prefix list =
+  let prefixLen = length prefix in
+  take prefixLen list == prefix
+
+-- Check if first list is suffix of second
+let isSuffixOf suffix list =
+  let suffixLen = length suffix in
+  let listLen = length list in
+  drop (listLen - suffixLen) list == suffix
+
+-- Check if first list appears anywhere in second
+let isInfixOf needle haystack = match haystack {
+  [] => null needle,
+  (x:xs) =>
+    if isPrefixOf needle haystack {
+      true
+    } else {
+      isInfixOf needle xs
+    }
+}
+
+-- Check if first list is subsequence of second
+let isSubsequenceOf subseq list = match subseq {
+  [] => true,
+  (x:xs) => match list {
+    [] => false,
+    (y:ys) =>
+      if x == y {
+        isSubsequenceOf xs ys
+      } else {
+        isSubsequenceOf (x:xs) ys
+      }
+  }
+}
+
+-- List indexing operations
+
+-- Find index of first occurrence
+let elemIndex x xs =
+  let helper n ys = match ys {
+    [] => Nothing,
+    (y:ys) => if x == y { Just n } else { helper (n + 1) ys }
+  } in
+  helper 0 xs
+
+-- Find all indices where element occurs
+let elemIndices x xs =
+  let helper n ys = match ys {
+    [] => [],
+    (y:ys) =>
+      if x == y {
+        n : helper (n + 1) ys
+      } else {
+        helper (n + 1) ys
+      }
+  } in
+  helper 0 xs
+
+-- Find index of first element satisfying predicate
+let findIndex p xs =
+  let helper n ys = match ys {
+    [] => Nothing,
+    (y:ys) => if p y { Just n } else { helper (n + 1) ys }
+  } in
+  helper 0 xs
+
+-- Find all indices where predicate is satisfied
+let findIndices p xs =
+  let helper n ys = match ys {
+    [] => [],
+    (y:ys) =>
+      if p y {
+        n : helper (n + 1) ys
+      } else {
+        helper (n + 1) ys
+      }
+  } in
+  helper 0 xs
+
+-- Zipping operations
+
+-- Zip three lists with a function
+let zipWith3 f xs ys zs = match xs {
+  [] => [],
+  (x:xs) => match ys {
+    [] => [],
+    (y:ys) => match zs {
+      [] => [],
+      (z:zs) => f x y z : zipWith3 f xs ys zs
+    }
+  }
+}
+
+-- Set-like operations
+
+-- Remove duplicates, keeping first occurrence
+let nub = unique
+
+-- Remove first occurrence of element
+let delete = remove
+
+-- List difference
+let diff xs ys = difference xs ys
+
+-- Custom comparison operations
+
+-- Remove duplicates using custom equality
+let nubBy eq xs = match xs {
+  [] => [],
+  (x:xs) => x : nubBy eq (filter (\\y -> not (eq x y)) xs)
+}
+
+-- Delete first occurrence using custom equality
+let deleteBy eq x xs = match xs {
+  [] => [],
+  (y:ys) => if eq x y { ys } else { y : deleteBy eq x ys }
+}
+
+-- Delete all first occurrences using custom equality
+let deleteFirstsBy eq xs ys = foldl (flip (deleteBy eq)) xs ys
+
+-- Union using custom equality
+let unionBy eq xs ys = xs ++ foldl (flip (deleteBy eq)) (nubBy eq ys) xs
+
+-- Intersection using custom equality
+let intersectBy eq xs ys = filter (\\x -> any (eq x) ys) xs
+
+-- Generic numeric operations (aliases for standard versions)
+let genericLength = length
+let genericTake = take
+let genericDrop = drop
+let genericSplitAt = splitAt
+let genericIndex = at
+let genericReplicate = replicate
